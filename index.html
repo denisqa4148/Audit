@@ -232,17 +232,20 @@ function update(){
   updateStoreStatus();
 }
 
-async function saveAll() {
+async function saveAll(){
   const payload = {
     date: document.getElementById('date').value,
     auditor: document.getElementById('auditor').value,
     store: document.getElementById('store').value,
     note: document.getElementById('note').value,
     summary: document.getElementById('summary').value,
-    pct: Math.round((checked() / steps.length) * 100),
+    pct: Math.round((checked()/steps.length)*100),
     done: checked(),
     total: steps.length,
-    status: document.getElementById('kpiStatus').innerText.trim()
+    status: document.getElementById('kpiStatus').innerText.trim(),
+    comments: steps.map((_, i) => document.getElementById(`n_${i}`)?.value || localStorage.getItem(key(i,'note')) || ''),
+    stepChecks: steps.map((_, i) => localStorage.getItem(key(i,'chk')) === '1' ? 1 : 0),
+    stepPhotos: steps.map((_, i) => !!localStorage.getItem(key(i,'photo')) ? 1 : 0)
   };
 
   await fetch('https://script.google.com/macros/s/AKfycbxjfvIbdIiZ0k6HjvFu4OF20DTaWX1KefiWGtVShG09XLJlLvHt2fEyjagji25rDusMAA/exec', {
