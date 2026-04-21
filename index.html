@@ -248,7 +248,7 @@ async function saveAll(){
     stepPhotos: steps.map((_, i) => !!localStorage.getItem(key(i,'photo')) ? 1 : 0)
   };
 
-  await fetch('https://script.google.com/macros/s/AKfycbyzn-KbDS05qV0Bz-51YiKhsTXtS7ZrL9_Q-k3A_i0K9tkPq5t1LNwPaPjxshB_6_bssw/exec', {
+  await fetch('https://script.google.com/macros/s/AKfycbzz1Qu03OnEAJwZ8khzb9p7Ehs12oReny69ZZRBS9BjuKnGqX146r-U4bOgJ2zXMIh8tw/exec', {
     method: 'POST',
     mode: 'no-cors',
     headers: { 'Content-Type': 'application/json' },
