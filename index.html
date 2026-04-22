@@ -238,7 +238,7 @@ comments: steps.map((_, i) => document.getElementById(`n_${i}`)?.value || localS
 stepChecks: steps.map((_, i) => localStorage.getItem(key(i,'chk')) === '1' ? 1 : 0),
 stepPhotos: steps.map((_, i) => !!localStorage.getItem(key(i,'photo')) ? 1 : 0)
 };
-await fetch('https://script.google.com/macros/s/AKfycbzz1Qu03OnEAJwZ8khzb9p7Ehs12oReny69ZZRBS9BjuKnGqX146r-U4bOgJ2zXMIh8tw/exec', {
+await fetch('https://script.google.com/macros/s/AKfycbzK_fy70ZJItjU4iMUP71Pmn2sow6666_3dVOqF16UkQm64q-Gn3gF5PLkOy5mktOMdiQ/exec', {
 method: 'POST',
 mode: 'no-cors',
 headers: { 'Content-Type': 'application/json' },
