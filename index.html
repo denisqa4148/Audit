@@ -57,7 +57,24 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 .btnRed{background:linear-gradient(90deg,var(--red),#b91c1c);color:#1f0505}
 .progressWrap{margin-top:10px;background:#0b1220;border:1px solid rgba(255,255,255,.08);border-radius:999px;overflow:hidden;height:14px}
 .progress{height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--green));transition:width .25s ease}
-.footer{margin-top:14px;color:var(--muted);font-size:12px;text-align:center}
+.footerWrap{margin-top:14px}
+.footerLink{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  width:100%;
+  padding:14px 16px;
+  border-radius:16px;
+  border:1px solid rgba(56,189,248,.35);
+  background:linear-gradient(180deg,rgba(56,189,248,.16),rgba(37,99,235,.10));
+  color:var(--txt);
+  text-decoration:none;
+  font-weight:700;
+  box-shadow:0 10px 24px rgba(0,0,0,.18);
+}
+.footerLink:active{transform:translateY(1px)}
+.footerSmall{margin-top:8px;color:var(--muted);font-size:12px;text-align:center}
 @media (max-width: 860px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.row,.photoRow{grid-template-columns:1fr}}
 </style>
 </head>
@@ -69,6 +86,7 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 <div class="progressWrap"><div class="progress" id="progressBar"></div></div>
 </div>
 </div>
+
 <div class="wrap">
 <div class="grid cards">
 <div class="card"><div class="sub">Выполнено</div><div class="kpi" id="kpiDone">0<small>/14</small></div></div>
@@ -117,7 +135,12 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 </div>
 </div>
 
-<div class="footer">После галочки пункт подсвечивается зелёным. ТО на перенос — жёлтый индикатор "КОНТРОЛЬ".</div>
+<div class="footerWrap">
+<a class="footerLink" href="https://docs.google.com/spreadsheets/d/1wq0O2YwsZ6syOxUCyaPeFxCz9ZzKlzss06uT6Bn6hnQ/edit?gid=0#gid=0" target="_blank" rel="noopener noreferrer">
+Открыть таблицу Google Sheets
+</a>
+<div class="footerSmall">Таблица откроется в новой вкладке.</div>
+</div>
 </div>
 
 <script>
@@ -142,6 +165,7 @@ const transferStores = [
 "ФМ_12 г. Липецк, проспект Победы, 19а","ФМ_02 г. Иваново, ул.Революционная, 78 В","ФМ_19 г. Брянск, пр-кт Ленина 63, пом.2","ФМ_28 г.Великий Новгород, ул.Псковская, 11","ФМ_13 г. Владимир, ул. Добросельская 186б","ФМ_23 г.Орёл, Советская улица, 41","ФМ_30 г.Липецк, ул им. Генерала Меркулова, д. 63","ФМ_47 г.Волхов, проспект Державина, 32","ФМ_60 г. Великие Луки, ул Вокзальная, д. 26","ФМ_58 г.Брянск, ул.3 Интернационала, д.6, Брянская","ФМ_54 г.Ярославль, ул Ветеранов, д. 32, Ярославска","ФМ_32 г.Клинцы, проспект Ленина, 20","ФМ_21 г.Тамбов, ул.Магистральная 37А","ФМ_11 г.Рязань,ул.Татарская,95","ВП_08 г.Самара, ул 22 Партсъезда, д.18, Самарская","ФМ_36 г.Вязники, ул. Ленина, 26Г","ВП_07 г. Волжский, пр-кт им Ленина, д. 85, Волгогр","ФМ_14 г.Ярославль, пр-кт Фрунзе, д.29, Ярославская","ВП_02 г Краснодар, ул им. Тюляева, д. 39А","ВП_06 г.Омск, пр-кт Карла Маркса, д. 39, помещ. 11","ВП_09 г.Екатеринбург, ул 8 Марта, д.142, Свердловс","ФМ_45 г. Кинешма, ул Щорса, д. 62а, Ивановская обл"
 ];
 
+const uniqueStores = [...new Set(transferStores)];
 const root=document.getElementById('steps'); let current=0;
 const storeInput=document.getElementById('store');
 const storePicker=document.getElementById('storePicker');
@@ -157,16 +181,13 @@ function updateStoreStatus(){
     statusText.textContent='ТО не выбран';
     return;
   }
-  const isTransfer=transferStores.includes(store);
+  const isTransfer=uniqueStores.includes(store);
   statusDot.className=isTransfer ? 'dot control' : 'dot working';
   statusText.textContent=isTransfer ? 'КОНТРОЛЬ' : 'РАБОТАЕТ';
 }
 
 function renderStorePicker(){
-  storePicker.innerHTML=transferStores.concat([
-    "ВП_02 г Краснодар, ул им. Тюляева, д. 39А","ВП_06 г.Омск, пр-кт Карла Маркса, д. 39, помещ. 11","ВП_07 г. Волжский, пр-кт им Ленина, д. 85, Волгогр","ВП_08 г.Самара, ул 22 Партсъезда, д.18, Самарская","ВП_09 г.Екатеринбург, ул 8 Марта, д.142, Свердловс",
-    "ФМ_01 г. Владимир, ул.Верхняя Дуброва, д.26ж","ФМ_03 г. Ковров, ул. Ватутина, д. 59","ФМ_08 г .Ярославль ,пр-т Ленинградский,49А","ФМ_09 г.Владимир,ул.Славная,1а","ФМ_15 г. Владимир, пр-т Ленина,27","ФМ_16 г Кострома, мкр Паново, д. 15","ФМ_17 г.Жуковка, ул Карла Маркса, д. 8, Брянская о","ФМ_20 г.Тамбов, ул Интернациональная 52а","ФМ_22 г.Брянск ул. Ульянова 7А","ФМ_24 г.Липецк, ул.Краснозаводская, 23","ФМ_25 г.Липецк, ул. Гагарина, 97","ФМ_26 г.Орехово-Зуево, ул.Вокзальная, д.4, Московс","ФМ_27 г Тула, ул Вильямса, д. 32","ФМ_29 г.Тверь,ул.Левитана, д. 46а","ФМ_31 г.Брянск, ул Горбатова, д. 41","ФМ_33 г.Великий Новгород, ул.Октябрьская, 26","ФМ_34 г.Псков, ул.Коммунальная, 73А","ФМ_35 г.Иваново, ул Шубиных, д. 16В","ФМ_37 г.Собинка, ул. Димитрова, 11","ФМ_38 г.Владимир, ул. Батурина, 14","ФМ_39 г.Торжок, ул. Дзержинского, 65","ФМ_40 г.Псков, ул. Коммунальная, 41","ФМ_41 г.Владимир, ул.Горького, 56","ФМ_42 г. Владимир, ул Сперанского, д. 11","ФМ_43 г.Тверь, ул.Академика Туполева, д. 111Б","ФМ_44 г. Владимир, ул.Фоминская, д.1","ФМ_46 г.Тутаев, проспект 50-летия Победы, 6К","ФМ_48 г.Вышний Волочек, пр-кт Казанский, д.126","ФМ_49 г. Десногорск, 2-й микрорайон, строение 24","ФМ_50 г.Псков, пр-кт Октябрьский, д.54","ФМ_51 г.Рыбинск, ул.Гагарина, д.13, Ярославская об","ФМ_52 г.Рыбинск, ул Кирова, д.9, к.2, Ярославская","ФМ_53 г.Ярославль, пр-кт Машиностроителей, д.11б","ФМ_55 г.Псков, пр-кт Рижский, д. 14","ФМ_56 г.Псков, Октябрьский проспект, 28","ФМ_57 г Великий Новгород, пр-кт Мира, д 25 к 1","ФМ_59 Ленинградская область, г.Кириши, пр-кт Ленин","ФМ_61 г.Владимир, ул Егорова, д.8б","ФМ_62 г.Ярославль, ул Балтийская, д. 27, Ярославск","ФМ_63 г. Брянск, ул Тельмана, стр. 68Г, Брянская о","ФМ_64 Ленинградская обл. г.Тосно, ул Боярова, д. 2","ФМ_65 г.Вязьма, ул Строителей, д. 6, Смоленская об","ФМ_66 г.Орёл, ул.Приборостроительная, д.21","ФМ_68 г.Узловая, ул Октябрьская, д.6, Тульская обл","ФМ_69 г.Луга, проспект Кирова, 77","ФМ_70 Тульская область, г Донской, ул.Октябрьская 101Б","ФМ_71 г.Великий Новгород, ул.Кочетова, д.12, Новго","ФМ_72 г.Конаково, проезд Торговый, д.3а","ФМ_73 г.Старая Русса, ул Поперечная, д. 77, Новгор","ФМ_74 г.Великий Новгород, ул.Чудинцева, д. 5, Новг","ФМ_75 д.Борисовичи, ул.Балтийская,д.12А, Псковская","ФМ_76 г.Боровичи, ул Подбельского, д.15, Новгородс","ФМ_77 г.Псков, ул.Леона Поземского, д.61","ФМ_80 г.Владимир, ул.Комиссарова, д.17","ФМ_82 г.Ярославль, пр-кт Московский, д.123"
-  ]).map(v=>`<div class="storeItem" data-value="${v.replace(/"/g,'&quot;')}">${v}</div>`).join('');
+  storePicker.innerHTML=uniqueStores.map(v=>`<div class="storeItem" data-value="${v.replace(/"/g,'&quot;')}">${v}</div>`).join('');
 }
 
 function render(){
@@ -264,7 +285,13 @@ async function saveAll(){
     });
 
     const text = await res.text();
-    alert(text);
+    const data = JSON.parse(text);
+
+    if (data.ok) {
+      alert(`${data.message}\nСтрока: ${data.rowLength}\nФото: ${data.savedPhotos}`);
+    } else {
+      alert(`Ошибка: ${data.error || 'неизвестно'}`);
+    }
   } catch (err) {
     alert('Fetch error: ' + err.message);
   }
