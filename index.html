@@ -225,26 +225,32 @@ updateStoreStatus();
 document.getElementById('saveBtn').disabled = checked() < steps.length;
 }
 async function saveAll(){
-const payload = {
-date: document.getElementById('date').value,
-auditor: document.getElementById('auditor').value,
-store: document.getElementById('store').value,
-note: document.getElementById('note').value,
-summary: document.getElementById('summary').value,
-pct: Math.round((checked()/steps.length)*100),
-done: checked(),
-total: steps.length,
-status: document.getElementById('kpiStatus').innerText.trim(),
-comments: steps.map((_, i) => document.getElementById(`n_${i}`)?.value || localStorage.getItem(key(i,'note')) || ''),
-photos: steps.map((_, i) => localStorage.getItem(key(i,'photo')) || '')
-};
-await fetch('https://script.google.com/macros/s/AKfycbxxFO5YyXt2mfz3ElWJjTsZOfT4_IPMZid8C8X_TUSV1Bbd-GRFRIu0Zyb1Cqn8feiKiQ/exec', {
-method: 'POST',
-mode: 'no-cors',
-headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify(payload)
-});
-alert('Сохранено в Google Sheets');
+  const payload = {
+    date: document.getElementById('date').value,
+    auditor: document.getElementById('auditor').value,
+    store: document.getElementById('store').value,
+    note: document.getElementById('note').value,
+    summary: document.getElementById('summary').value,
+    pct: Math.round((checked()/steps.length)*100),
+    done: checked(),
+    total: steps.length,
+    status: document.getElementById('kpiStatus').innerText.trim(),
+    comments: steps.map((_, i) => document.getElementById(`n_${i}`)?.value || localStorage.getItem(key(i,'note')) || ''),
+    photos: steps.map((_, i) => localStorage.getItem(key(i,'photo')) || '')
+  };
+
+  try {
+    const res = await fetch('https://script.google.com/macros/s/AKfycbxxFO5YyXt2mfz3ElWJjTsZOfT4_IPMZid8C8X_TUSV1Bbd-GRFRIu0Zyb1Cqn8feiKiQ/exec', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const text = await res.text();
+    alert(text);
+  } catch (err) {
+    alert('Fetch error: ' + err.message);
+  }
 }
 function loadAll(){['date','auditor','store','note','summary'].forEach(id=>{const v=localStorage.getItem('audit_'+id); if(v!==null) document.getElementById(id).value=v}); if(!document.getElementById('date').value) document.getElementById('date').valueAsDate=new Date(); updateStoreStatus();}
 function resetAll(){if(confirm('Сбросить всё?')){Object.keys(localStorage).forEach(k=>{if(k.startsWith('audit_')||k.startsWith('u_')) localStorage.removeItem(k)});location.reload()}}
