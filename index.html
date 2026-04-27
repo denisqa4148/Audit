@@ -75,6 +75,21 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 }
 .footerLink:active{transform:translateY(1px)}
 .footerSmall{margin-top:8px;color:var(--muted);font-size:12px;text-align:center}
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:18px;
+  transform:translateX(-50%);
+  background:#0b1220;
+  color:var(--txt);
+  border:1px solid rgba(34,197,94,.35);
+  border-radius:14px;
+  padding:12px 16px;
+  box-shadow:0 14px 30px rgba(0,0,0,.35);
+  display:none;
+  z-index:1000;
+  max-width:92vw;
+}
 @media (max-width: 860px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.row,.photoRow{grid-template-columns:1fr}}
 </style>
 </head>
@@ -143,6 +158,8 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 </div>
 </div>
 
+<div id="toast" class="toast"></div>
+
 <script>
 const steps=[
 ['Вход','Фасад и вывеска: чистота, двери, окна, урны, подсветка и внешний вид',true],
@@ -161,19 +178,85 @@ const steps=[
 ['Финал','Беседа с управленцем: показатели, планы, проблемы, обратная связь',false]
 ];
 
-const transferStores = [
-"ФМ_12 г. Липецк, проспект Победы, 19а","ФМ_02 г. Иваново, ул.Революционная, 78 В","ФМ_19 г. Брянск, пр-кт Ленина 63, пом.2","ФМ_28 г.Великий Новгород, ул.Псковская, 11","ФМ_13 г. Владимир, ул. Добросельская 186б","ФМ_23 г.Орёл, Советская улица, 41","ФМ_30 г.Липецк, ул им. Генерала Меркулова, д. 63","ФМ_47 г.Волхов, проспект Державина, 32","ФМ_60 г. Великие Луки, ул Вокзальная, д. 26","ФМ_58 г.Брянск, ул.3 Интернационала, д.6, Брянская","ФМ_54 г.Ярославль, ул Ветеранов, д. 32, Ярославска","ФМ_32 г.Клинцы, проспект Ленина, 20","ФМ_21 г.Тамбов, ул.Магистральная 37А","ФМ_11 г.Рязань,ул.Татарская,95","ВП_08 г.Самара, ул 22 Партсъезда, д.18, Самарская","ФМ_36 г.Вязники, ул. Ленина, 26Г","ВП_07 г. Волжский, пр-кт им Ленина, д. 85, Волгогр","ФМ_14 г.Ярославль, пр-кт Фрунзе, д.29, Ярославская","ВП_02 г Краснодар, ул им. Тюляева, д. 39А","ВП_06 г.Омск, пр-кт Карла Маркса, д. 39, помещ. 11","ВП_09 г.Екатеринбург, ул 8 Марта, д.142, Свердловс","ФМ_45 г. Кинешма, ул Щорса, д. 62а, Ивановская обл"
+const allStores = [
+  "ВП_02 г Краснодар, ул им. Тюляева, д. 39А",
+  "ВП_06 г.Омск, пр-кт Карла Маркса, д. 39, помещ. 11",
+  "ВП_07 г. Волжский, пр-кт им Ленина, д. 85, Волгогр",
+  "ВП_08 г.Самара, ул 22 Партсъезда, д.18, Самарская",
+  "ВП_09 г.Екатеринбург, ул 8 Марта, д.142, Свердловс",
+  "ФМ_01 г. Владимир, ул.Верхняя Дуброва, д.26ж",
+  "ФМ_03 г. Ковров, ул. Ватутина, д. 59",
+  "ФМ_08 г .Ярославль ,пр-т Ленинградский,49А",
+  "ФМ_09 г.Владимир,ул.Славная,1а",
+  "ФМ_15 г. Владимир, пр-т Ленина,27",
+  "ФМ_16 г Кострома, мкр Паново, д. 15",
+  "ФМ_17 г.Жуковка, ул Карла Маркса, д. 8, Брянская о",
+  "ФМ_20 г.Тамбов, ул Интернациональная 52а",
+  "ФМ_22 г.Брянск ул. Ульянова 7А",
+  "ФМ_24 г.Липецк, ул.Краснозаводская, 23",
+  "ФМ_25 г.Липецк, ул. Гагарина, 97",
+  "ФМ_26 г.Орехово-Зуево, ул.Вокзальная, д.4, Московс",
+  "ФМ_27 г Тула, ул Вильямса, д. 32",
+  "ФМ_29 г.Тверь,ул.Левитана, д. 46а",
+  "ФМ_31 г.Брянск, ул Горбатова, д. 41",
+  "ФМ_33 г.Великий Новгород, ул.Октябрьская, 26",
+  "ФМ_34 г.Псков, ул.Коммунальная, 73А",
+  "ФМ_35 г.Иваново, ул Шубиных, д. 16В",
+  "ФМ_37 г.Собинка, ул. Димитрова, 11",
+  "ФМ_38 г.Владимир, ул. Батурина, 14",
+  "ФМ_39 г.Торжок, ул. Дзержинского, 65",
+  "ФМ_40 г.Псков, ул. Коммунальная, 41",
+  "ФМ_41 г.Владимир, ул.Горького, 56",
+  "ФМ_42 г. Владимир, ул Сперанского, д. 11",
+  "ФМ_43 г.Тверь, ул.Академика Туполева, д. 111Б",
+  "ФМ_44 г. Владимир, ул.Фоминская, д.1",
+  "ФМ_46 г.Тутаев, проспект 50-летия Победы, 6К",
+  "ФМ_48 г.Вышний Волочек, пр-кт Казанский, д.126",
+  "ФМ_49 г. Десногорск, 2-й микрорайон, строение 24",
+  "ФМ_50 г.Псков, пр-кт Октябрьский, д.54",
+  "ФМ_51 г.Рыбинск, ул.Гагарина, д.13, Ярославская об",
+  "ФМ_52 г.Рыбинск, ул Кирова, д.9, к.2, Ярославская",
+  "ФМ_53 г.Ярославль, пр-кт Машиностроителей, д.11б",
+  "ФМ_55 г.Псков, пр-кт Рижский, д. 14",
+  "ФМ_56 г.Псков, Октябрьский проспект, 28",
+  "ФМ_57 г Великий Новгород, пр-кт Мира, д 25 к 1",
+  "ФМ_59 Ленинградская область, г.Кириши, пр-кт Ленин",
+  "ФМ_61 г.Владимир, ул Егорова, д.8б",
+  "ФМ_62 г.Ярославль, ул Балтийская, д. 27, Ярославск",
+  "ФМ_63 г. Брянск, ул Тельмана, стр. 68Г, Брянская о",
+  "ФМ_64 Ленинградская обл. г.Тосно, ул Боярова, д. 2",
+  "ФМ_65 г.Вязьма, ул Строителей, д. 6, Смоленская об",
+  "ФМ_66 г.Орёл, ул.Приборостроительная, д.21",
+  "ФМ_68 г.Узловая, ул Октябрьская, д.6, Тульская обл",
+  "ФМ_69 г.Луга, проспект Кирова, 77",
+  "ФМ_70 Тульская область, г Донской, ул.Октябрьская 101Б",
+  "ФМ_71 г.Великий Новгород, ул.Кочетова, д.12, Новго",
+  "ФМ_72 г.Конаково, проезд Торговый, д.3а",
+  "ФМ_73 г.Старая Русса, ул Поперечная, д. 77, Новгор",
+  "ФМ_74 г.Великий Новгород, ул.Чудинцева, д. 5, Новг",
+  "ФМ_75 д.Борисовичи, ул.Балтийская,д.12А, Псковская",
+  "ФМ_76 г.Боровичи, ул Подбельского, д.15, Новгородс",
+  "ФМ_77 г.Псков, ул.Леона Поземского, д.61",
+  "ФМ_80 г.Владимир, ул.Комиссарова, д.17",
+  "ФМ_82 г.Ярославль, пр-кт Московский, д.123"
 ];
 
-const uniqueStores = [...new Set(transferStores)];
+const uniqueStores = [...new Set(allStores)];
 const root=document.getElementById('steps'); let current=0;
 const storeInput=document.getElementById('store');
 const storePicker=document.getElementById('storePicker');
 const statusDot=document.getElementById('statusDot');
 const statusText=document.getElementById('statusText');
+const toast=document.getElementById('toast');
 
 function key(i,t){return `u_${i}_${t}`}
-
+function showToast(msg, ok=true){
+  toast.style.borderColor = ok ? 'rgba(34,197,94,.35)' : 'rgba(239,68,68,.45)';
+  toast.textContent = msg;
+  toast.style.display = 'block';
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(()=>toast.style.display='none', 3200);
+}
 function updateStoreStatus(){
   const store=storeInput.value.trim();
   if(!store){
@@ -185,11 +268,9 @@ function updateStoreStatus(){
   statusDot.className=isTransfer ? 'dot control' : 'dot working';
   statusText.textContent=isTransfer ? 'КОНТРОЛЬ' : 'РАБОТАЕТ';
 }
-
 function renderStorePicker(){
   storePicker.innerHTML=uniqueStores.map(v=>`<div class="storeItem" data-value="${v.replace(/"/g,'&quot;')}">${v}</div>`).join('');
 }
-
 function render(){
   root.innerHTML='';
   steps.forEach((x,i)=>{
@@ -215,7 +296,6 @@ function render(){
   });
   update();
 }
-
 function handlePhoto(i,file){
   const reader=new FileReader();
   reader.onload=e=>{
@@ -227,21 +307,17 @@ function handlePhoto(i,file){
   };
   reader.readAsDataURL(file)
 }
-
 function loadPhotoPreview(i){
   const src=localStorage.getItem(key(i,'photo'));
   const img=document.getElementById(`img_${i}`);
   if(src){img.src=src;img.style.display='block'}else img.style.display='none'
 }
-
 function scrollCurrent(){
   document.querySelectorAll('.step').forEach((s,idx)=>s.style.display=idx===current?'flex':'none');
   document.getElementById('kpiStep').innerHTML=(current+1)+'<small>/14</small>'
 }
-
 function checked(){return steps.filter((_,i)=>localStorage.getItem(key(i,'chk'))==='1').length}
 function status(){const p=checked()/steps.length; return p<.4?'красный':p<.8?'жёлтый':'зелёный'}
-
 function update(){
   const c=checked(), p=Math.round(c/steps.length*100);
   document.getElementById('kpiDone').innerHTML=c+'<small>/14</small>';
@@ -262,7 +338,6 @@ function update(){
   updateStoreStatus();
   document.getElementById('saveBtn').disabled = checked() < steps.length;
 }
-
 async function saveAll(){
   const payload = {
     date: document.getElementById('date').value,
@@ -288,15 +363,24 @@ async function saveAll(){
     const data = JSON.parse(text);
 
     if (data.ok) {
-      alert(`${data.message}\nСтрока: ${data.rowLength}\nФото: ${data.savedPhotos}`);
+      showToast(`${data.message}. Фото: ${data.savedPhotos}.`, true);
+      clearAllAfterSave();
     } else {
-      alert(`Ошибка: ${data.error || 'неизвестно'}`);
+      showToast(`Ошибка: ${data.error || 'неизвестно'}`, false);
     }
   } catch (err) {
-    alert('Fetch error: ' + err.message);
+    showToast('Fetch error: ' + err.message, false);
   }
 }
-
+function clearAllAfterSave(){
+  Object.keys(localStorage).forEach(k=>{if(k.startsWith('u_')) localStorage.removeItem(k)});
+  ['date','auditor','store','note','summary'].forEach(id=>document.getElementById(id).value='');
+  current=0;
+  updateStoreStatus();
+  render();
+  document.getElementById('date').valueAsDate=new Date();
+  showToast('Форма очищена и готова к новому аудиту.', true);
+}
 function loadAll(){
   ['date','auditor','store','note','summary'].forEach(id=>{
     const v=localStorage.getItem('audit_'+id);
@@ -305,14 +389,12 @@ function loadAll(){
   if(!document.getElementById('date').value) document.getElementById('date').valueAsDate=new Date();
   updateStoreStatus();
 }
-
 function resetAll(){
   if(confirm('Сбросить всё?')){
     Object.keys(localStorage).forEach(k=>{if(k.startsWith('audit_')||k.startsWith('u_')) localStorage.removeItem(k)});
     location.reload()
   }
 }
-
 renderStorePicker();
 storeInput.addEventListener('focus',()=>storePicker.style.display='block');
 storeInput.addEventListener('click',()=>storePicker.style.display='block');
