@@ -238,7 +238,7 @@ status: document.getElementById('kpiStatus').innerText.trim(),
 comments: steps.map((_, i) => document.getElementById(`n_${i}`)?.value || localStorage.getItem(key(i,'note')) || ''),
 photos: steps.map((_, i) => localStorage.getItem(key(i,'photo')) || '')
 };
-await fetch('https://script.google.com/macros/s/AKfycbzdGRk271y0twAcKPzNN9FX6DtxLGnbDX4Yz3ap8tQVt8ie5XCb11RUdIh-iUDv5QzI/exec', {
+await fetch('https://script.google.com/macros/s/AKfycbwbMc-5ghcDN9Sr0xHYv6QjOFqYlXSxXMCHN2DNdZiZJxn87iYOPpGFpNAc9dk-ZEgcoA/exec', {
 method: 'POST',
 mode: 'no-cors',
 headers: { 'Content-Type': 'application/json' },
