@@ -114,11 +114,11 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 <div class="sectionHead"><h2>1. Паспорт объекта</h2><p>Заполни данные перед стартом.</p></div>
 <div class="body">
 <div class="row">
-<div class="field"><label>Дата</label><input id="date" type="date"></div>
-<div class="field"><label>Аудитор</label><input id="auditor" type="text" placeholder="ФИО"></div>
+<div class="field">abel>Дата</label><input id="date" type="date"></div>
+<div class="field">abel>Аудитор</label><input id="auditor" type="text" placeholder="ФИО"></div>
 </div>
 <div class="field">
-<label>ТО</label>
+abel>ТО</label>
 <input id="store" type="text" readonly placeholder="Нажмите, чтобы выбрать ТО">
 <div class="statusIndicator" id="storeStatus">
 <div class="dot empty" id="statusDot"></div>
@@ -126,7 +126,7 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 </div>
 <div id="storePicker" class="storePicker"></div>
 </div>
-<div class="field"><label>Комментарий по объекту</label><textarea id="note" placeholder="Кратко опиши объект"></textarea></div>
+<div class="field">abel>Комментарий по объекту</label><textarea id="note" placeholder="Кратко опиши объект"></textarea></div>
 </div>
 </div>
 
@@ -145,7 +145,7 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 <div class="section">
 <div class="sectionHead"><h2>3. Итоговая заметка</h2><p>Короткое резюме по объекту.</p></div>
 <div class="body">
-<div class="field"><label>Итог</label><textarea id="summary" placeholder="Что критично исправить, что в норме"></textarea></div>
+<div class="field">abel>Итог</label><textarea id="summary" placeholder="Что критично исправить, что в норме"></textarea></div>
 <div class="nav"><button class="btnBlue" id="saveBtn">Сохранить</button></div>
 </div>
 </div>
@@ -253,6 +253,23 @@ const statusDot=document.getElementById('statusDot');
 const statusText=document.getElementById('statusText');
 const toast=document.getElementById('toast');
 
+const steps = [
+  ['Вход','Фасад и вывеска: чистота, двери, окна, урны, подсветка и внешний вид',true],
+  ['Вход','Входная зона и уголок покупателя: коврик, мусор, POS-материалы, документы',true],
+  ['Зал','Торговый зал и проходы: чистый пол, отсутствие мусора, паллеты не мешают',true],
+  ['Зал','Мерчандайзинг: схемограммы, товарное соседство, золотые места, уценка',true],
+  ['Цены','Ценники и акции: наличие на СКЮ и фейсах, читаемость, актуальность',true],
+  ['Холод','Холодильное оборудование и температура: наполнение, сроки, журналы, режим',true],
+  ['Персонал','Персонал: униформа, бейджи, опрятность, стандарты обслуживания',false],
+  ['Касса','Касса и допродажи: планы, средний чек, корзина, оформление зоны',false],
+  ['Маркетинг','Внутренние материалы, стенды, ТВ и аудио: плакаты, обязательная информация, ролики',true],
+  ['Безопасность','Пожарная безопасность и журналы: огнетушители, выходы, стенды, учет',true],
+  ['Инженерия','Инженерные системы: свет, вода, кондиционеры, двери, доводчики',true],
+  ['Товародвижение','Товародвижение и склад: остатки, приемка, размещение, ротация',true],
+  ['Конкуренты','Цены маркеров и ближайшие конкуренты: сравнение цен и ассортимента',false],
+  ['Финал','Беседа с управленцем: показатели, планы, проблемы, обратная связь',false]
+];
+
 function key(i,t){return `u_${i}_${t}`}
 function showToast(msg, ok=true){
   toast.style.borderColor = ok ? 'rgba(34,197,94,.35)' : 'rgba(239,68,68,.45)';
@@ -328,7 +345,6 @@ function update(){
   document.getElementById('kpiPct').textContent=p+'%';
   document.getElementById('kpiStatus').innerHTML='<small>'+status()+'</small>';
   document.getElementById('progressBar').style.width=p+'%';
-
   document.querySelectorAll('.step').forEach((s,idx)=>{
     const photo=!!localStorage.getItem(key(idx,'photo'));
     const crit=s.dataset.critical==='1';
@@ -337,7 +353,6 @@ function update(){
     s.classList.toggle('bad',false);
     s.style.display=idx===current?'flex':'none';
   });
-
   scrollCurrent();
   updateStoreStatus();
   document.getElementById('saveBtn').disabled = checked() < steps.length;
